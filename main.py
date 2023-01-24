@@ -7,6 +7,12 @@ from tqdm import tqdm
 from bs4 import BeautifulSoup
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
+from pandas import Series
+from pandas import DataFrame
+import seaborn as sns
+
+NORM_FREQUENCY: int = 3000
 
 
 def import_config() -> dict:
@@ -72,8 +78,10 @@ if __name__ == "__main__":
     use_model_search_data, use_sample_data = get_arguments()
     cpus_bs4: list[BeautifulSoup] = []
     ipc_weights: list[float] = []
+    ipc_weights_as_dataframe: Series
     bars: list[str] = []
     geekbench_session: Session = create_session()
+    norm_ipc_weight: float = 0
 
     if use_model_search_data is False:
         for each_cpu in config['queries']:
@@ -114,8 +122,8 @@ if __name__ == "__main__":
         bars.append(cpu_name)
 
         if use_sample_data is False:
-            for i in tqdm(range(0, 20), initial=1, total=20, desc='fetch ' + cpu_name + ' samples'):
-                each_sample_url_a_element = search_result_for_each_cpu[i].select_one(
+            for j in tqdm(range(0, 25), initial=1, total=25, desc='fetch ' + cpu_name + ' samples'):
+                each_sample_url_a_element = search_result_for_each_cpu[j].select_one(
                     'div > div > div > div.col-12.col-lg-4 > a')
                 assert each_sample_url_a_element is not None
                 each_sample_url: str = 'https://browser.geekbench.com/' + \
@@ -124,30 +132,55 @@ if __name__ == "__main__":
                 samples.append(fetch_each_result(
                     each_sample_url, geekbench_session))
 
-                with open(cpu_name + '.' + str(i) + '.json', 'w') as f:
-                    json.dump(samples[i - 1], f, indent=2)
+                with open(cpu_name + '.' + str(j) + '.json', 'w') as f:
+                    json.dump(samples[j], f, indent=2)
 
             # with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
             #     each_result_as_json: list[dict] = list(
             #         tqdm(executor.map(fetch_each_result, sample_urls, geekbench_session)))
         else:
-            for i in tqdm(range(1, 20), initial=1, total=20, desc='load ' + cpu_name + ' samples'):
-                with open(cpu_name + '.' + str(i) + '.json', 'r') as f:
+            for j in tqdm(range(0, 25), initial=1, total=25, desc='load ' + cpu_name + ' samples'):
+                with open(cpu_name + '.' + str(j) + '.json', 'r') as f:
                     samples.append(json.load(f))
 
+        # 25 iterations
         for sample in samples:
-            average_frequency: int = sum(sample['processor_frequency']['frequencies']) // len(
+            frequencies = pd.Series(
                 sample['processor_frequency']['frequencies'])
-            ipc_weight: float = sample['sections'][0]['score'] / \
-                average_frequency
+            average_high_frequency: int = sum(frequencies.nlargest(5)) // 5
+            if i == 0:
+                ipc_weight: float = (sample['sections'][0]['score'] /
+                                     average_high_frequency) * 4000
+            else:
+                ipc_weight: float = (sample['sections'][0]['score'] /
+                                     average_high_frequency) * 4000
             ipc_weight_sum = ipc_weight_sum + ipc_weight
 
-        average_ipc_weight = ipc_weight_sum / 20
+        average_ipc_weight = ipc_weight_sum / 25
+
+        if i == 0:
+            norm_ipc_weight = average_ipc_weight
         print('cpu name: ', cpu_name, ' average_ipc_weight', average_ipc_weight)
-        ipc_weights.append(average_ipc_weight)
+        ipc_weights.append( (average_ipc_weight / norm_ipc_weight) * 100)
 
-    x_pos = np.arange(len(bars))
+    # plt.style.use('classic')
+    # fig, ax = plt.subplots()
 
-    plt.bar(x_pos, ipc_weights)
-    plt.xticks(x_pos, bars)
+    # x_pos = np.arange(len(bars))
+    # p = ax.bar(bars, ipc_weights, label='IPC')
+
+    # ax.set_ylabel('IPC')
+    # ax.set_title('IPC by CPU Generation')
+    # ax.set_xticks(x_pos)
+    # ax.legend()
+
+    # ax.bar_label(p, label_type='center')
+    # plt.show()
+    dots = pd.Series(ipc_weights)
+
+    sns.set_theme(context='paper', style='darkgrid',)
+    sns.barplot(
+        data=dots,
+    
+    )
     plt.show()
