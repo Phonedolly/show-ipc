@@ -1,0 +1,88 @@
+{
+  "queries": [
+    {
+      "query": "870",
+      "new_arch": true,
+      "release": 2009,
+      "description": "Core i7-870"
+    },
+    {
+      "query": "2700K",
+      "new_arch": true,
+      "release": 2011,
+      "description": "Core i7-2700K"
+    },
+    {
+      "query": "3770K",
+      "new_arch": false,
+      "release": 2012,
+      "description": "Core i7-3770K"
+    },
+    {
+      "query": "4770K",
+      "new_arch": true,
+      "release": 2013,
+      "description": "Core i7-4770K"
+    },
+    {
+      "query": "4790K",
+      "new_arch": false,
+      "release": 2014,
+      "description": "Core i7-4790K"
+    },
+    {
+      "query": "5775C",
+      "new_arch": false,
+      "release": 2015,
+      "description": "Core i7-5775C"
+    },
+    {
+      "query": "6700K",
+      "new_arch": true,
+      "release": 2015,
+      "description": "Core i7-6700K"
+    },
+    {
+      "query": "7700K",
+      "new_arch": false,
+      "release": 2016,
+      "description": "Core i7-7700K"
+    },
+    {
+      "query": "8700K",
+      "new_arch": false,
+      "release": 2017,
+      "description": "Core i7-8700K"
+    },
+    {
+      "query": "9900KS",
+      "new_arch": false,
+      "release": 2018,
+      "description": "Core i9-9900KS"
+    },
+    {
+      "query": "10900K",
+      "new_arch": false,
+      "release": 2020,
+      "description": "Core i9-10900K"
+    },
+    {
+      "query": "11900K",
+      "new_arch": true,
+      "release": 2021,
+      "description": "Core i9-11900K"
+    },
+    {
+      "query": "12900K",
+      "new_arch": true,
+      "release": 2021,
+      "description": "Core i9-12900K"
+    },
+    {
+      "query": "13900K",
+      "new_arch": false,
+      "release": 2022,
+      "description": "Core i9-13900K"
+    }
+  ]
+}

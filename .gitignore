@@ -1,0 +1,5 @@
+/.venv
+/cache
+*.html
+config.json
+*.*.json
